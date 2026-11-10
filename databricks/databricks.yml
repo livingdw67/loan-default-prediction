@@ -19,5 +19,4 @@ targets:
   dev:
     mode: development
     default: true
-    workspace:
-      host: https://dbc-303976ab-2cd1.cloud.databricks.com
+    # No workspace host here: it comes from the CLI profile (--profile) or DATABRICKS_HOST.
