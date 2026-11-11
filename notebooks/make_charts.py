@@ -66,7 +66,7 @@ def compute(path):
     # The same out-of-fold scores as validate_locally.py step 2
     oof = cross_val_predict(ensemble(), X, y, cv=StratifiedKFold(10, shuffle=True, random_state=42),
                             method="predict_proba")[:, 1]
-    # The cutoff validate_locally.py step 3 chooses on the 80% development split (the README's 0.10)
+    # The cutoff validate_locally.py step 3 chooses on the 80% development split (the README's 0.09)
     X_dev, _, y_dev, _ = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
     dev_oof = cross_val_predict(ensemble(), X_dev, y_dev, cv=StratifiedKFold(5, shuffle=True, random_state=42),
                                 method="predict_proba")[:, 1]

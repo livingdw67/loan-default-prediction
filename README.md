@@ -2,7 +2,7 @@
 
 A loan default model with ECOA-compliant features and a decision cutoff chosen for the business cost of a missed default, not for accuracy. Built with Azure AutoML, then rebuilt on Databricks with Optuna, MLflow and Unity Catalog, where one tuned LightGBM does the work of the three-model ensemble.
 
-On a true 20% holdout the model catches about **75% of defaults (AUC 0.76)** at a cutoff chosen on the other 80%. The first estimate, 80% caught, came from scoring the training data; finding and correcting that is part of the write-up.
+On a true 20% holdout the model catches about **80% of defaults (AUC 0.76)** at a cutoff of 0.09 chosen on the other 80%, flagging about 42% of accounts for review. The first analysis also reported 80% caught, at a cutoff of 0.15 that flags far fewer accounts, but that came from scoring the training data. On unseen customers that cutoff catches about 57%. Finding and correcting that is part of the write-up.
 
 ## Features and compliance
 
@@ -31,20 +31,20 @@ The original analysis set the cutoff at 0.15 from a precision/recall curve compu
 
 | Evaluation | Cutoff | Defaults caught | Precision | AUC |
 |------------|--------|-----------------|-----------|-----|
-| Training data (original method) | 0.15 | 79.8% | 32.7% | 0.90 |
-| 10-fold cross-validation | 0.15 | 56.5% | 23.3% | 0.76 |
-| Held-out 20%, original cutoff | 0.15 | 58.0% | 23.1% | 0.76 |
-| **Held-out 20%, cutoff chosen on the other 80%** | **0.10** | **74.6%** | **19.8%** | **0.76** |
+| Training data (original method) | 0.15 | 79.6% | 32.5% | 0.90 |
+| 10-fold cross-validation | 0.15 | 56.4% | 23.3% | 0.76 |
+| Held-out 20%, original cutoff | 0.15 | 57.7% | 22.9% | 0.76 |
+| **Held-out 20%, cutoff chosen on the other 80%** | **0.09** | **80.0%** | **19.3%** | **0.76** |
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/Precision_recall_curve-dark.png">
-  <img alt="Precision, recall, F1 and F2 against the decision cutoff on 10-fold cross-validated scores: F2 is nearly flat from 0.08 to 0.10; at 0.10, 74% of defaults are caught at 20% precision with 38% of accounts flagged; the original 0.15 cutoff catches 56%" src="images/Precision_recall_curve.png">
+  <img alt="Precision, recall, F1 and F2 against the decision cutoff on 10-fold cross-validated scores: F2 is nearly flat from 0.08 to 0.10; at 0.09, 78% of defaults are caught at 19% precision with 41% of accounts flagged; the original 0.15 cutoff catches 56%" src="images/Precision_recall_curve.png">
 </picture>
 
-*   At the original 0.15 cutoff, the model catches about 57% of defaults on unseen customers, not 75–80%.
-*   Choosing the F2 cutoff properly, on separate data, lands at **0.10**: about **75% of defaults caught on a true holdout**, with roughly 38% of accounts flagged for review. Whether that review volume is acceptable is a business decision about the cost of a review against a charge-off.
+*   At the original 0.15 cutoff, the model catches about 57% of defaults on unseen customers, not the 80% the training data showed.
+*   Choosing the F2 cutoff properly, on separate data, lands at **0.09**: about **80% of defaults caught on a true holdout**, with roughly 42% of accounts flagged for review. Whether that review volume is acceptable is a business decision about the cost of a review against a charge-off.
 *   Out-of-sample AUC is about **0.76**, solid and realistic for application-time credit data.
-*   F2 is nearly flat between 0.08 and 0.10, so library versions move the cutoff: with the versions pinned in `requirements-dev.txt`, the same script picks 0.09 and catches 80.0% at 19.3% precision (AUC 0.762).
+*   The table and chart come from the versions pinned in `requirements-dev.txt`. F2 is nearly flat between 0.08 and 0.10, so library versions move the cutoff: an earlier run on unpinned versions picked 0.10 and caught 74.6% at 19.8% precision. The chart uses the cross-validated scores for all 20,839 customers, so its figures at 0.09 differ slightly from the holdout row.
 
 ## What drives risk
 
