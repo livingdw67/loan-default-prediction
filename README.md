@@ -1,5 +1,7 @@
 # Loan Default Prediction
 
+[![tests](https://github.com/livingdw67/loan-default-prediction/actions/workflows/tests.yml/badge.svg)](https://github.com/livingdw67/loan-default-prediction/actions/workflows/tests.yml)
+
 A loan default model with ECOA-compliant features and a decision cutoff chosen for the business cost of a missed default, not for accuracy. Built with Azure AutoML, then rebuilt on Databricks with Optuna, MLflow and Unity Catalog, where one tuned LightGBM does the work of the three-model ensemble.
 
 On a true 20% holdout the model catches about **80% of defaults (AUC 0.76)** at a cutoff of 0.09 chosen on the other 80%, flagging about 42% of accounts for review. The first analysis also reported 80% caught, at a cutoff of 0.15 that flags far fewer accounts, but that came from scoring the training data. On unseen customers that cutoff catches about 57%. Finding and correcting that is part of the write-up.
@@ -87,7 +89,7 @@ The search settled on small trees (7 leaves, 250 trees, learning rate 0.016). Th
 
 ## Run it
 
-Local checks: `python -m pip install -r requirements-dev.txt`, then `python -m pytest -q tests`.
+Local checks: `python -m pip install -r requirements-dev.txt`, then `python -m pytest -q tests`. The same tests run on every push and pull request ([tests.yml](.github/workflows/tests.yml)).
 
 The workspace host comes from the CLI profile, so log in once first:
 
